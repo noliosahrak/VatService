@@ -1,7 +1,7 @@
 from unittest import mock
-from unittest.mock import patch, Mock
 
-from Product import Product
+import pytest
+
 from VatService import VatService
 
 
@@ -27,3 +27,11 @@ class TestVatService:
 
         # then
         assert result == 108
+
+    def test_should_raise_exception_when_vat_is_to_high(self):
+        # given
+        vat_service = VatService()
+
+        # then
+        with pytest.raises(Exception, match="VAT should be lower"):
+            vat_service.get_gross_price(1, 10)
