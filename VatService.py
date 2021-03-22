@@ -4,7 +4,7 @@ class VatService:
         self.vatValue = 0.23
 
     def get_gross_price_for_default_vat(self, product):
-        return self.get_gross_price(product.getNetPrice(), self.vatValue)
+        return self.get_gross_price(product.get_net_price(), self.vatValue)
 
     @staticmethod
     def get_gross_price(net_price, vat_value):
