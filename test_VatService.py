@@ -1,4 +1,6 @@
 from unittest import mock
+
+import pytest
 from assertpy import assert_that
 
 from VatService import VatService
@@ -17,15 +19,16 @@ class TestVatService:
         # then
         assert_that(result).is_equal_to(123)
 
-    def test_should_calculate_gross_price_for_other_vat_value(self):
+    @pytest.mark.parametrize("net_price, vat_value, gross_price", [(20, 0.08, 21.6), (4, 0.05, 4.2)])
+    def test_should_calculate_gross_price_for_other_vat_value(self, net_price, vat_value, gross_price):
         # given
         vat_service = VatService()
 
         # when
-        result = vat_service.get_gross_price(100, 0.08)
+        result = vat_service.get_gross_price(net_price, vat_value)
 
         # then
-        assert_that(result).is_equal_to(108)
+        assert_that(result).is_equal_to(gross_price)
 
     def test_should_raise_exception_when_vat_is_to_high(self):
         # given
