@@ -1,6 +1,5 @@
 from unittest import mock
-
-import pytest
+from assertpy import assert_that
 
 from VatService import VatService
 
@@ -16,7 +15,7 @@ class TestVatService:
         result = vat_service.get_gross_price_for_default_vat(mock_product)
 
         # then
-        assert result == 123
+        assert_that(result).is_equal_to(123)
 
     def test_should_calculate_gross_price_for_other_vat_value(self):
         # given
@@ -26,12 +25,12 @@ class TestVatService:
         result = vat_service.get_gross_price(100, 0.08)
 
         # then
-        assert result == 108
+        assert_that(result).is_equal_to(108)
 
     def test_should_raise_exception_when_vat_is_to_high(self):
         # given
         vat_service = VatService()
 
         # then
-        with pytest.raises(Exception, match="VAT should be lower"):
-            vat_service.get_gross_price(1, 10)
+        assert_that(vat_service.get_gross_price).raises(Exception).when_called_with(1, 10)\
+            .is_equal_to("VAT should be lower")
