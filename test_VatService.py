@@ -1,39 +1,46 @@
+from random import randint
 from unittest import mock
 
 import pytest
 from assertpy import assert_that
 
+from Product import Product
 from VatService import VatService
 
 
 class TestVatService:
-    def test_should_calculate_gross_price_for_default_vat(self):
+    @pytest.fixture()
+    def vat(self):
+        self.vat_provider = mock.Mock()
+        self.vat_service = VatService(self.vat_provider)
+
+    def test_should_calculate_gross_price_for_default_vat(self, vat):
         # given
-        vat_service = VatService()
-        mock_product = mock.Mock(name="product mock")
-        mock_product.get_net_price.return_value = 100
+        product = self.generate_product(100, "clothes")
+        self.vat_provider.get_default_vat.return_value = 0.23
 
         # when
-        result = vat_service.get_gross_price_for_default_vat(mock_product)
+        result = self.vat_service.get_gross_price_for_default_vat(product)
 
         # then
         assert_that(result).is_equal_to(123)
 
-    @pytest.mark.parametrize("net_price, vat_value, gross_price", [(20, 0.08, 21.6), (4, 0.05, 4.2)])
-    def test_should_calculate_gross_price_for_other_vat_value(self, net_price, vat_value, gross_price):
+    def test_should_calculate_gross_price_for_other_vat_value(self, vat):
         # given
-        vat_service = VatService()
+        product = self.generate_product(4, "bread")
+        self.vat_provider.get_vat_for_type.return_value = 0.05
 
         # when
-        result = vat_service.get_gross_price(net_price, vat_value)
+        result = self.vat_service.get_gross_price(product)
 
         # then
-        assert_that(result).is_equal_to(gross_price)
+        assert_that(result).is_equal_to(4.2)
 
-    def test_should_raise_exception_when_vat_is_to_high(self):
-        # given
-        vat_service = VatService()
-
+    def test_should_raise_exception_when_vat_is_to_high(self, vat):
         # then
-        assert_that(vat_service.get_gross_price).raises(Exception).when_called_with(1, 10)\
+        assert_that(self.vat_service.calculate_gross_price).raises(Exception).when_called_with(1, 10) \
             .is_equal_to("VAT should be lower")
+
+    @staticmethod
+    def generate_product(net_price, product_type):
+        return Product(str(randint(10000000, 99999999)), net_price, product_type)
