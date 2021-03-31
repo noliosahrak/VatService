@@ -41,12 +41,12 @@ class TestVatService:
         assert_that(self.vat_service.calculate_gross_price).raises(Exception).when_called_with(1, "a4g5") \
             .is_equal_to("VAT should be numeric value")
 
-    def test_should_raise_exception_when_vat_is_negative(self, vat):
+    def test_should_raise_exception_when_vat_is_to_high(self, vat):
         # then
         assert_that(self.vat_service.calculate_gross_price).raises(Exception).when_called_with(1, 10) \
-            .is_equal_to("VAT should be lower")
+            .is_equal_to("VAT should be lower than 1")
 
-    def test_should_raise_exception_when_vat_is_to_high(self, vat):
+    def test_should_raise_exception_when_vat_is_negative(self, vat):
         # then
         assert_that(self.vat_service.calculate_gross_price).raises(Exception).when_called_with(1, -1) \
             .is_equal_to("VAT should have positive value")

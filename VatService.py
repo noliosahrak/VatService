@@ -18,7 +18,7 @@ class VatService:
         if not isinstance(vat_value, Number):
             raise Exception("VAT should be numeric value")
         elif vat_value > 1:
-            raise Exception("VAT should be lower")
+            raise Exception("VAT should be lower than 1")
         elif vat_value < 0:
             raise Exception("VAT should have positive value")
         return round(net_price * (1 + vat_value), 2)
